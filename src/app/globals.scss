@@ -6,3 +6,7 @@
 body{
   background-color: #05040c;
 }
+.custom-input::placeholder {
+  color: #e8e6f5;
+  opacity: 0.5;
+}

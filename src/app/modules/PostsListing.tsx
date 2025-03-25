@@ -35,13 +35,13 @@ const PostsListing = () => {
 
     return (
         <>    
-            <div className="row justify-content-center my-2">
+            <section className="row justify-content-center my-2">
                 <NewPostForm />
-            </div>
+            </section>
             {
                 example.map((post, index) => {
                     return (
-                        <div className="row justify-content-center my-2" key={index}>
+                        <section className="row justify-content-center my-2" key={index}>
                             <Post 
                                 username={post.username} 
                                 profilePicture={post.profilePicture} 
@@ -51,7 +51,7 @@ const PostsListing = () => {
                                 countLikes={post.countLikes}
                                 countReplies={post.countReplies}
                             />
-                        </div>    
+                        </section>    
                     )
                 })
             }

@@ -2,7 +2,7 @@ import React from 'react'
 
 const NewPostForm = () => {
     return (
-        <div className="col-12 col-sm-10 col-md-8 col-xl-6 p-0">
+        <section className="col-12 col-sm-10 col-md-8 col-xl-6 p-0">
             <form>
             <textarea
                 style={{
@@ -19,7 +19,7 @@ const NewPostForm = () => {
                 placeholder="Share yours thoughs..."
             />
             </form>
-        </div>
+        </section>
     )
 }
 
