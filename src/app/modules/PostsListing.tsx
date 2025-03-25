@@ -34,7 +34,10 @@ const PostsListing = () => {
     ]
 
     return (
-        <>        
+        <>    
+            <div className="row justify-content-center my-2">
+                <NewPostForm />
+            </div>
             {
                 example.map((post, index) => {
                     return (
