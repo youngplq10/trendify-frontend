@@ -87,16 +87,12 @@ export const theme = createTheme ({
           style: {
             color: '#e8e6f5',
             backgroundColor: '#9c92e1',
-            borderRadius: '10px',
-            padding: '5px 20px 5px 20px',
           },
         },
         {
             props: { variant: 'outlined' },
             style: {
               color: '#e8e6f5',
-              borderRadius: '10px',
-              padding: '05px 20px 5px 20px'
             },
         }
       ],
@@ -108,11 +104,6 @@ export const theme = createTheme ({
         },
         outlined: {
             color: '#e8e6f5'
-        },
-        sizeSmall: {
-          fontSize: '0.55rem',
-          padding: '2px 4px', 
-          minWidth: '100%',  
         },
       }
     },

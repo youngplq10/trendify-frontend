@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.scss";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./scripts/theme";
 
 export const metadata: Metadata = {
   title: "Trendify – Stay Ahead of the Trends!",
@@ -19,7 +21,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
       </head>
       <body>
-        {children}
+        <ThemeProvider theme={theme}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

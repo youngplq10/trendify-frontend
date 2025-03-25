@@ -10,6 +10,8 @@ const PostsListing = () => {
             createdAtDate: "2025-01-01 | 11:56",
             imageLink: null,
             content: "Hello, this is my first post",
+            countLikes: 1,
+            countReplies: 70,
         },
         {
             username: "starzynski.dev",
@@ -17,6 +19,8 @@ const PostsListing = () => {
             createdAtDate: "2025-01-01 | 11:56",
             imageLink: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
             content: "Hello, this is my second post",
+            countLikes: 250,
+            countReplies: 55,
         },
         {
             username: "gabi",
@@ -24,20 +28,26 @@ const PostsListing = () => {
             createdAtDate: "2025-01-01 | 11:56",
             imageLink: null,
             content: "Good morning :))))",
+            countLikes: 20,
+            countReplies: 5,
         },
     ]
 
     return (
-        <>
-            <div className="row border">
-                <NewPostForm />
-            </div>
-            
+        <>        
             {
                 example.map((post, index) => {
                     return (
-                        <div className="row" key={index}>
-                            <Post username={post.username} profilePicture={post.profilePicture} createdAtDate={post.createdAtDate} imageLink={post.imageLink} content={post.content} />
+                        <div className="row justify-content-center my-2" key={index}>
+                            <Post 
+                                username={post.username} 
+                                profilePicture={post.profilePicture} 
+                                createdAtDate={post.createdAtDate} 
+                                imageLink={post.imageLink} 
+                                content={post.content} 
+                                countLikes={post.countLikes}
+                                countReplies={post.countReplies}
+                            />
                         </div>    
                     )
                 })
