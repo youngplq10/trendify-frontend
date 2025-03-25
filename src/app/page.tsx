@@ -1,9 +1,13 @@
 import { Typography } from "@mui/material";
+import Post from "./components/Post";
+import PostsListing from "./modules/PostsListing";
 
 export default function Home() {
   return (
-    <>
-      <Typography variant="h1">Hello</Typography>
-    </>
+    <div className="container-lg">
+      <div className="row">
+        <PostsListing />
+      </div>
+    </div>
   )
 }
