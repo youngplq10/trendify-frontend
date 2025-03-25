@@ -14,6 +14,7 @@
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.8",
     "bootstrap": "^5.3.3",
+    "joi": "^17.13.3",
     "jwt-decode": "^4.0.0",
     "next": "14.2.23",
     "react": "^18",
