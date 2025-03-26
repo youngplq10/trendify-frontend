@@ -28,17 +28,15 @@ const SignUpForm = () => {
             if (profilePicture) {
                 formData.append("picture", profilePicture, profilePicture?.name);
             }
-
+            
             const res = await createUser(formData);
-
-            console.log(res)
 
             if (res) {
                 setErrorMessage(res);
                 setErrorState(true);
             } else {
-                setErrorState(true);
-                setErrorMessage("aaa")
+                setErrorState(false);
+                window.location.href = "/";
             }
         } else {
             setErrorMessage(validation);

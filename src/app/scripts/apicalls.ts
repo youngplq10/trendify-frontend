@@ -4,7 +4,6 @@ import { Storage } from "@google-cloud/storage";
 import path from "path";
 import axios from "axios"
 import { setAuthToken } from "./server";
-import { string } from "joi";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
@@ -43,18 +42,16 @@ export const createUser = async (formData: FormData) : Promise<string | void>=> 
                     });
 
                     if (res.status === 409) {
-                        console.log(409)
                         return res.data.error
                     }
                     if (res.status === 201) {
-                        console.log(201)
                         setAuthToken(res.data.jwt);
                     }
 
                 } catch (error) {
                     if (axios.isAxiosError(error)) {
                         if (error.response?.status === 409) {
-                            return error.response.data.message
+                            return error.response.data.error
                         } else {
                             return "Server error. Please try again."
                         }
@@ -74,22 +71,18 @@ export const createUser = async (formData: FormData) : Promise<string | void>=> 
                 });
 
                 if (res.status === 409) {
-                    console.log(409)
                     return res.data.error
                 }
                 if (res.status === 201) {
-                    console.log(201)
                     setAuthToken(res.data.jwt);
                 }
 
                 console.log(res)
 
             } catch (error) {
-                console.log(error)
                 if (axios.isAxiosError(error)) {
                     if (error.response?.status === 409) {
-                        console.log("a")
-                        return error.response.data.message
+                        return error.response.data.error
                     } else {
                         return "Server error. Please try again."
                     }
@@ -99,7 +92,6 @@ export const createUser = async (formData: FormData) : Promise<string | void>=> 
             }
         }
     } catch {
-        console.log(5002)
         return "Server error. Please try again."
     }
 };
