@@ -3,16 +3,29 @@
 import { Button, Link, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { validateNewUser } from '../scripts/validation';
+import { createUser } from '../scripts/apicalls';
 
 const SignUpForm = () => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repassword, setRepassword] = useState("");
-    const [thumbnail, setThumbnail] = useState<File | null>(null);
+    const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
-    const handleSubmit = () => {
-        const validation = validateNewUser(username, email, password, repassword);
+    const handleSubmit = async () => {
+        //const validation = validateNewUser(username, email, password, repassword);
+
+        const formData = new FormData();
+
+        formData.append("username", username);
+        formData.append("email", email);
+        formData.append("password", password);
+        
+        if (profilePicture) {
+            formData.append("profilePicture", profilePicture, profilePicture?.name);
+        }
+
+        createUser(formData);
     }
 
     return (
@@ -50,7 +63,7 @@ const SignUpForm = () => {
                 accept="image/*" 
                 id="file-upload"
                 className="d-none"
-                onChange={(e) => setThumbnail(e.target.files?.[0] || null)} 
+                onChange={(e) => setProfilePicture(e.target.files?.[0] || null)} 
             />
 
             <label 
@@ -64,7 +77,7 @@ const SignUpForm = () => {
                     cursor: "pointer",
                 }}
             >
-                {thumbnail ? thumbnail.name : "Upload Profile Picture"}
+                {profilePicture ? profilePicture.name : "Upload Profile Picture"}
             </label>
 
             <Button variant='contained' className='px-4 mb-2' onClick={handleSubmit}>Create account</Button>
