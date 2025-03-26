@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Link, Typography } from '@mui/material'
+import { Alert, Button, Link, Snackbar, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import { validateNewUser } from '../scripts/validation';
 import { createUser } from '../scripts/apicalls';
@@ -12,20 +12,38 @@ const SignUpForm = () => {
     const [repassword, setRepassword] = useState("");
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errorState, setErrorState] = useState(false);
+
     const handleSubmit = async () => {
-        //const validation = validateNewUser(username, email, password, repassword);
+        const validation = validateNewUser(username, email, password, repassword);
 
-        const formData = new FormData();
+        if (validation === "Success") {
+            const formData = new FormData();
 
-        formData.append("username", username);
-        formData.append("email", email);
-        formData.append("password", password);
-        
-        if (profilePicture) {
-            formData.append("profilePicture", profilePicture, profilePicture?.name);
+            formData.append("username", username);
+            formData.append("email", email);
+            formData.append("password", password);
+            
+            if (profilePicture) {
+                formData.append("picture", profilePicture, profilePicture?.name);
+            }
+
+            const res = await createUser(formData);
+
+            console.log(res)
+
+            if (res) {
+                setErrorMessage(res);
+                setErrorState(true);
+            } else {
+                setErrorState(true);
+                setErrorMessage("aaa")
+            }
+        } else {
+            setErrorMessage(validation);
+            setErrorState(true);
         }
-
-        createUser(formData);
     }
 
     return (
@@ -85,6 +103,17 @@ const SignUpForm = () => {
             <Typography variant='body1' color='text.primary'>
                 You already have an account? <Link href="/sign-in">Sign in now!</Link>
             </Typography>
+
+            <Snackbar open={errorState} autoHideDuration={6000} onClose={() => setErrorState(false)}>
+                <Alert
+                    onClose={() => setErrorState(false)}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
         </form>
     )
 }
