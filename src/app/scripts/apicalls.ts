@@ -13,7 +13,7 @@ const storage = new Storage({
 });
 const bucket = storage.bucket(BUCKETNAME || "");
 
-export const createUser = async (formData: FormData) : Promise<string | void>=> {
+export const createUser = async (formData: FormData) : Promise<string | void> => {
     try {
         if (formData.get("picture") !== null) {
             const profilePicture = formData.get("picture") as File;
@@ -77,8 +77,6 @@ export const createUser = async (formData: FormData) : Promise<string | void>=> 
                     setAuthToken(res.data.jwt);
                 }
 
-                console.log(res)
-
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     if (error.response?.status === 409) {
@@ -95,3 +93,27 @@ export const createUser = async (formData: FormData) : Promise<string | void>=> 
         return "Server error. Please try again."
     }
 };
+
+export const loginUser = async (formData: FormData) : Promise<string | void> => {
+    try {
+        const res = await axios.post(API + "/public/user/login", formData, {});
+
+        if (res.status === 409) {
+            return res.data.error
+        }
+        if (res.status === 200) {
+            setAuthToken(res.data.jwt);
+        }
+    } catch (error) {
+        console.log(error)
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}
