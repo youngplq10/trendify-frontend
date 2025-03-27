@@ -3,7 +3,7 @@
 import { Storage } from "@google-cloud/storage";
 import path from "path";
 import axios from "axios"
-import { setAuthToken } from "./server";
+import { getAllCookies, setAuthToken } from "./server";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
@@ -29,7 +29,7 @@ export const createUser = async (formData: FormData) : Promise<string | void> =>
             fileStream.on("finish", async () => {
                 const [url] = await file.getSignedUrl({
                     action: "read",
-                    expires: Date.now() + 60 * 60 * 24 * 365,
+                    expires: Date.now() + 60 * 60 * 24 * 365 * 100,
                 });
 
                 formData.append("profilePicture", url);
@@ -103,6 +103,93 @@ export const loginUser = async (formData: FormData) : Promise<string | void> => 
         }
         if (res.status === 200) {
             setAuthToken(res.data.jwt);
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}
+
+export const newPost = async (formData: FormData) : Promise<string | void> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        if (formData.get("postPicture") !== null) {
+            const postPicture = formData.get("postPicture") as File;
+
+            const buffer = Buffer.from(await postPicture.arrayBuffer());
+
+            const file = bucket.file(`${Date.now()}-${postPicture.name}`);
+            const fileStream = file.createWriteStream({
+                resumable: false,
+                metadata: { contentType: postPicture.type }
+            });
+
+            fileStream.on("finish", async () => {
+                const [url] = await file.getSignedUrl({
+                    action: "read",
+                    expires: Date.now() + 60 * 60 * 24 * 365 * 100,
+                });
+                formData.delete("postPicture")
+                formData.append("image", url);
+
+                try {
+                    const res = await axios.post(API + "/auth/post/create", formData, {
+                        headers: {
+                            "Authorization" : "Bearer " + jwt?.value
+                        }
+                    });
+
+                    if (res.status === 409) {
+                        return res.data.error
+                    }
+
+                } catch (error) {
+                    console.log(error)
+                    if (axios.isAxiosError(error)) {
+                        if (error.response?.status === 409) {
+                            return error.response.data.error
+                        } else {
+                            return "Server error. Please try again."
+                        }
+                    } else {
+                        return "Server error. Please try again."
+                    }
+                }
+            });
+
+            fileStream.end(buffer);
+        } else {
+            try {
+                const res = await axios.post(API + "/auth/post/create", formData, {
+                    headers: {
+                        "Authorization" : "Bearer " + jwt?.value
+                    }
+                });
+
+                if (res.status === 409) {
+                    return res.data.error
+                }
+
+            } catch (error) {
+                console.log(error)
+                if (axios.isAxiosError(error)) {
+                    if (error.response?.status === 409) {
+                        return error.response.data.error
+                    } else {
+                        return "Server error. Please try again."
+                    }
+                } else {
+                    return "Server error. Please try again."
+                }
+            }
         }
     } catch (error) {
         console.log(error)

@@ -38,6 +38,15 @@ const existingUserSchema = Joi.object({
         "string.min": "Password is too short. Minimum 3 characters.",
         "string.max": "Password is too long. Maximum 20 characters."
     }),
+});
+
+const newPostSchema = Joi.object({
+    content: Joi.string().min(3).max(400).required().messages({
+        "string.empty": "Content can't be empty.",
+        "string.min": "Content is too short. Minimum 3 characters.",
+        "string.max": "Content is too long. Maximum 20 characters.",
+        "any.required": "Content field is required to process.",
+    })
 })
 
 export const validateNewUser = (getUsername: string, getEmail: string, getPassword: string, getRepassword: string) : string => {
@@ -52,6 +61,16 @@ export const validateNewUser = (getUsername: string, getEmail: string, getPasswo
 
 export const validateExistingUser = (getUsername: string, getPassword: string) : string => {
     const result = existingUserSchema.validate({ username: getUsername, password: getPassword });
+
+    if (result.error != null) {
+        return result.error.message;
+    }
+    
+    return "Success";
+}
+
+export const validateNewPost = (getContent: string) : string => {
+    const result = newPostSchema.validate({ content: getContent });
 
     if (result.error != null) {
         return result.error.message;

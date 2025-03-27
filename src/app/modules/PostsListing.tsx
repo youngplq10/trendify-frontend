@@ -35,7 +35,7 @@ const PostsListing = () => {
 
     return (
         <>    
-            <section className="row justify-content-center my-2">
+            <section className="row justify-content-center my-3">
                 <NewPostForm />
             </section>
             {
