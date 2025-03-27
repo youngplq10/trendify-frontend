@@ -14,82 +14,69 @@ const storage = new Storage({
 });
 const bucket = storage.bucket(BUCKETNAME || "");
 
-export const createUser = async (formData: FormData) : Promise<string | void> => {
+export const createUser = async (formData: FormData): Promise<string | void> => {
     try {
         if (formData.get("picture") !== null) {
             const profilePicture = formData.get("picture") as File;
-
             const buffer = Buffer.from(await profilePicture.arrayBuffer());
-
             const file = bucket.file(`${Date.now()}-${profilePicture.name}`);
-            const fileStream = file.createWriteStream({
-                resumable: false,
-                metadata: { contentType: profilePicture.type }
-            });
-
-            fileStream.on("finish", async () => {
-                const [url] = await file.getSignedUrl({
-                    action: "read",
-                    expires: Date.now() + 60 * 60 * 24 * 365 * 100,
+            
+            await new Promise<void>((resolve, reject) => {
+                const fileStream = file.createWriteStream({
+                    resumable: false,
+                    metadata: { contentType: profilePicture.type }
                 });
 
-                formData.append("profilePicture", url);
+                fileStream.on("finish", async () => {
+                    try {
+                        const [url] = await file.getSignedUrl({
+                            action: "read",
+                            expires: Date.now() + 60 * 60 * 24 * 365 * 100,
+                        });
 
-                try {
-                    const res = await axios.post(API + "/public/user/create", formData, {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    });
+                        formData.append("profilePicture", url);
 
-                    if (res.status === 409) {
-                        return res.data.error
-                    }
-                    if (res.status === 201) {
-                        setAuthToken(res.data.jwt);
-                    }
+                        const res = await axios.post(API + "/public/user/create", formData, {
+                            headers: { "Content-Type": "multipart/form-data" },
+                        });
 
-                } catch (error) {
-                    if (axios.isAxiosError(error)) {
-                        if (error.response?.status === 409) {
-                            return error.response.data.error
+                        if (res.status === 409) {
+                            reject(res.data.error);
+                        } else if (res.status === 201) {
+                            setAuthToken(res.data.jwt);
+                            resolve();
                         } else {
-                            return "Server error. Please try again."
+                            reject("Unexpected response from server.");
                         }
-                    } else {
-                        return "Server error. Please try again."
+                    } catch (error) {
+                        if (axios.isAxiosError(error) && error.response?.status === 409) {
+                            reject(error.response.data.error);
+                        } else {
+                            reject("Server error. Please try again.");
+                        }
                     }
-                }
-            });
-
-            fileStream.end(buffer);
-        } else {
-            try {
-                const res = await axios.post(API + "/public/user/create", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
                 });
 
-                if (res.status === 409) {
-                    return res.data.error
-                }
-                if (res.status === 201) {
-                    setAuthToken(res.data.jwt);
-                }
+                fileStream.on("error", reject);
+                fileStream.end(buffer);
+            });
+        } else {
+            const res = await axios.post(API + "/public/user/create", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    if (error.response?.status === 409) {
-                        return error.response.data.error
-                    } else {
-                        return "Server error. Please try again."
-                    }
-                } else {
-                    return "Server error. Please try again."
-                }
+            if (res.status === 409) {
+                return res.data.error;
+            }
+            if (res.status === 201) {
+                setAuthToken(res.data.jwt);
             }
         }
     } catch {
-        return "Server error. Please try again."
+        "Server error. Please try again.";
     }
 };
+
 
 export const loginUser = async (formData: FormData) : Promise<string | void> => {
     try {
