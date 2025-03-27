@@ -4,6 +4,7 @@ import { Storage } from "@google-cloud/storage";
 import path from "path";
 import axios from "axios"
 import { getAllCookies, setAuthToken } from "./server";
+import { post } from "./interfaces";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
@@ -36,9 +37,7 @@ export const createUser = async (formData: FormData) : Promise<string | void> =>
 
                 try {
                     const res = await axios.post(API + "/public/user/create", formData, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
+                        headers: { "Content-Type": "multipart/form-data" },
                     });
 
                     if (res.status === 409) {
@@ -65,9 +64,7 @@ export const createUser = async (formData: FormData) : Promise<string | void> =>
         } else {
             try {
                 const res = await axios.post(API + "/public/user/create", formData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
+                    headers: { "Content-Type": "multipart/form-data" },
                 });
 
                 if (res.status === 409) {
@@ -152,7 +149,6 @@ export const newPost = async (formData: FormData) : Promise<string | void> => {
                     }
 
                 } catch (error) {
-                    console.log(error)
                     if (axios.isAxiosError(error)) {
                         if (error.response?.status === 409) {
                             return error.response.data.error
@@ -192,7 +188,6 @@ export const newPost = async (formData: FormData) : Promise<string | void> => {
             }
         }
     } catch (error) {
-        console.log(error)
         if (axios.isAxiosError(error)) {
             if (error.response?.status === 409) {
                 return error.response.data.error
@@ -205,3 +200,25 @@ export const newPost = async (formData: FormData) : Promise<string | void> => {
     }
 }
 
+export const getAllPosts = async () : Promise<post[] | string> => {
+    try {
+        const res = await axios.get(API + "/public/post/getall", {});
+
+        if (res.status === 200) {
+            return res.data.posts as post[];
+        } else {
+            return res.data.error;
+        }
+        
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

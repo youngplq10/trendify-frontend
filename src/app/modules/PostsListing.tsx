@@ -1,8 +1,25 @@
-import React from 'react'
+"use client"
+
+import React, { useEffect, useState } from 'react'
 import NewPostForm from '../components/NewPostForm'
 import Post from '../components/Post'
+import { post } from '../scripts/interfaces'
+import { getAllPosts } from '../scripts/apicalls'
 
 const PostsListing = () => {
+    const [posts, setPosts] = useState<post[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            const res = await getAllPosts();
+            if (typeof res !== "string") {
+                setPosts(res);
+            }
+        }
+        fetchPosts();
+    }, [])
+
     const example = [
         {
             username: "starzynski.dev",
@@ -39,17 +56,17 @@ const PostsListing = () => {
                 <NewPostForm />
             </section>
             {
-                example.map((post, index) => {
+                posts.map((post, index) => {
                     return (
                         <section className="row justify-content-center my-2" key={index}>
                             <Post 
-                                username={post.username} 
-                                profilePicture={post.profilePicture} 
+                                username={post.user.username} 
+                                profilePicture={post.user.profilePicture} 
                                 createdAtDate={post.createdAtDate} 
                                 imageLink={post.imageLink} 
                                 content={post.content} 
-                                countLikes={post.countLikes}
-                                countReplies={post.countReplies}
+                                countLikes={200}
+                                countReplies={100}
                             />
                         </section>    
                     )
