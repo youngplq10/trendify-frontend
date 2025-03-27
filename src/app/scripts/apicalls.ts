@@ -204,3 +204,4 @@ export const newPost = async (formData: FormData) : Promise<string | void> => {
         }
     }
 }
+
