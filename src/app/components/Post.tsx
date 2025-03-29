@@ -1,29 +1,37 @@
 "use client"
 
-import { Button, Typography } from '@mui/material'
+import { Alert, Button, Snackbar, Typography } from '@mui/material'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import Link from 'next/link';
+import { likePost, unlikePost } from '../scripts/apicalls';
 
 const Post = 
-    ({ username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked }
+    ({ username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique }
      : 
-    { username: string, profilePicture: string | null, imageLink: string | null, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean }) => {
+    { username: string, profilePicture: string | null, imageLink: string | null, unique: string, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean }) => {
     
     const [liked, setLiked] = useState(isAlreadyLiked);
     const [likes, setLikes] = useState(countLikes);
+
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertState, setAlertState] = useState(false);
 
     const handleLike = async () => {
         if (liked) {
             setLikes(likes - 1);
             setLiked(false);
-            //unlike
+            const unlikeRes = await unlikePost(unique);
+            setAlertMessage(unlikeRes);
+            setAlertState(true);
         } else {
             setLiked(true);
             setLikes(likes + 1)
-            //like
+            const likeRes = await likePost(unique);
+            setAlertMessage(likeRes);
+            setAlertState(true);
         }
     }
         
@@ -73,6 +81,17 @@ const Post =
                     <Button variant='outlined' size='small' className='ms-1'><ModeCommentIcon /> <Typography variant='subtitle1' className='ms-1'>{countReplies}</Typography></Button>
                 </section>
             </section>
+
+            <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
+                <Alert
+                    onClose={() => setAlertState(false)}
+                    severity="info"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </section>
     )
 }

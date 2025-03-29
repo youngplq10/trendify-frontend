@@ -30,7 +30,6 @@ const PostsListing = () => {
 
             const res = await getAllPosts();
             if (typeof res !== "string") {
-
                 setPosts(res);
             }
         }
@@ -55,6 +54,7 @@ const PostsListing = () => {
                                     ) : false
                                 }
                                 username={post.user.username} 
+                                unique={post.unique}
                                 profilePicture={post.user.profilePicture} 
                                 createdAtDate={post.createdAtDate} 
                                 imageLink={post.imageLink} 
