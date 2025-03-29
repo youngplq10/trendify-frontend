@@ -65,8 +65,8 @@ const PostsListing = () => {
                                 createdAtDate={post.createdAtDate} 
                                 imageLink={post.imageLink} 
                                 content={post.content} 
-                                countLikes={200}
-                                countReplies={100}
+                                countLikes={post.likeCount}
+                                countReplies={post.replyCount}
                             />
                         </section>    
                     )

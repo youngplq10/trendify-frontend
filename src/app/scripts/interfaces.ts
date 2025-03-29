@@ -20,6 +20,8 @@ export interface post {
     user: user,
     replies: reply[],
     likes: user[],
+    likeCount: number,
+    replyCount: number,
 }
 
 export interface reply {
