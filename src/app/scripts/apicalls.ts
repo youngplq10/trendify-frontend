@@ -4,7 +4,7 @@ import { Storage } from "@google-cloud/storage";
 import path from "path";
 import axios from "axios"
 import { getAllCookies, setAuthToken } from "./server";
-import { post } from "./interfaces";
+import { post, user } from "./interfaces";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
@@ -197,6 +197,34 @@ export const getAllPosts = async () : Promise<post[] | string> => {
             return res.data.error;
         }
         
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}
+
+export const getUserData = async () : Promise<user | string> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.get(API + "/auth/user", {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status === 200) {
+            return res.data.data as user;
+        } else {
+            return res.data.error;
+        }
     } catch (error) {
         if (axios.isAxiosError(error)) {
             if (error.response?.status === 409) {

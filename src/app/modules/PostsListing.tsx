@@ -3,52 +3,39 @@
 import React, { useEffect, useState } from 'react'
 import NewPostForm from '../components/NewPostForm'
 import Post from '../components/Post'
-import { post } from '../scripts/interfaces'
-import { getAllPosts } from '../scripts/apicalls'
+import { post, user } from '../scripts/interfaces'
+import { getAllPosts, getUserData } from '../scripts/apicalls'
+import { getIsAuthenticated } from '../scripts/server'
 
 const PostsListing = () => {
     const [posts, setPosts] = useState<post[]>([]);
     const [loading, setLoading] = useState(true);
+    const [userData, setUserData] = useState<user>();
+    const [isLogged, setIsLogged] = useState<boolean>();
 
     useEffect(() => {
-        const fetchPosts = async () => {
+        const fetchIsAuth = async () => {
+            const isAuth = await getIsAuthenticated();
+            setIsLogged(isAuth);
+
+            if (isAuth) {
+                const resUserData = await getUserData();
+
+                if (typeof resUserData === "string") {
+                    //error handler
+                } else {
+                    setUserData(resUserData);
+                }
+            }
+
             const res = await getAllPosts();
             if (typeof res !== "string") {
+
                 setPosts(res);
             }
         }
-        fetchPosts();
-    }, [])
-
-    const example = [
-        {
-            username: "starzynski.dev",
-            profilePicture: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-            createdAtDate: "2025-01-01 | 11:56",
-            imageLink: null,
-            content: "Hello, this is my first post",
-            countLikes: 1,
-            countReplies: 70,
-        },
-        {
-            username: "starzynski.dev",
-            profilePicture: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-            createdAtDate: "2025-01-01 | 11:56",
-            imageLink: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-            content: "Hello, this is my second post",
-            countLikes: 250,
-            countReplies: 55,
-        },
-        {
-            username: "gabi",
-            profilePicture: "https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg",
-            createdAtDate: "2025-01-01 | 11:56",
-            imageLink: null,
-            content: "Good morning :))))",
-            countLikes: 20,
-            countReplies: 5,
-        },
-    ]
+        fetchIsAuth();
+    }, []);
 
     return (
         <>    
@@ -60,6 +47,13 @@ const PostsListing = () => {
                     return (
                         <section className="row justify-content-center my-2" key={index}>
                             <Post 
+                                isAlreadyLiked={
+                                    userData ? (
+                                        userData.likedPosts ? (
+                                            userData.likedPosts.some(userLikedPosts => userLikedPosts.unique === post.unique)
+                                        ) : false
+                                    ) : false
+                                }
                                 username={post.user.username} 
                                 profilePicture={post.user.profilePicture} 
                                 createdAtDate={post.createdAtDate} 
