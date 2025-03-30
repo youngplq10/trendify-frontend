@@ -7,11 +7,12 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import Link from 'next/link';
 import { likePost, unlikePost } from '../scripts/apicalls';
+import { beautifyTime } from '../scripts/scripts';
 
 const Post = 
-    ({ username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique }
+    ({ username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged }
      : 
-    { username: string, profilePicture: string | null, imageLink: string | null, unique: string, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean }) => {
+    { username: string, profilePicture: string | null, imageLink: string | null, unique: string, isUserLogged: boolean, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean }) => {
     
     const [liked, setLiked] = useState(isAlreadyLiked);
     const [likes, setLikes] = useState(countLikes);
@@ -20,17 +21,22 @@ const Post =
     const [alertState, setAlertState] = useState(false);
 
     const handleLike = async () => {
-        if (liked) {
-            setLikes(likes - 1);
-            setLiked(false);
-            const unlikeRes = await unlikePost(unique);
-            setAlertMessage(unlikeRes);
-            setAlertState(true);
+        if (isUserLogged) {
+            if (liked) {
+                setLikes(likes - 1);
+                setLiked(false);
+                const unlikeRes = await unlikePost(unique);
+                setAlertMessage(unlikeRes);
+                setAlertState(true);
+            } else {
+                setLiked(true);
+                setLikes(likes + 1)
+                const likeRes = await likePost(unique);
+                setAlertMessage(likeRes);
+                setAlertState(true);
+            }
         } else {
-            setLiked(true);
-            setLikes(likes + 1)
-            const likeRes = await likePost(unique);
-            setAlertMessage(likeRes);
+            setAlertMessage("You need to log in.");
             setAlertState(true);
         }
     }
@@ -49,7 +55,7 @@ const Post =
                     <Link href={"/profile/" + username} className='text-decoration-none'><Typography variant='body1' color='text.primary'>@{username}</Typography></Link>
                 </section>
                 <section className="col-6 text-end">
-                    <Typography variant='body1' color='text.primary'>{createdAtDate}</Typography>
+                    <Typography variant='body1' color='text.primary'>{beautifyTime(createdAtDate)}</Typography>
                 </section>
             </section>
 
@@ -61,13 +67,15 @@ const Post =
 
             { imageLink ? (
                 <section className="row px-2 pb-2">
-                    <article className="col-auto">
+                    <article className="col-fluid">
                         <Image
                             src={imageLink}
                             alt='Image of post'
                             width={100}
                             height={100}
                             className='img-fluid rounded'
+                            style={{ cursor: 'pointer', maxHeight: "300px" }}
+                            onClick={() => window.location.href = "/post/" + unique}
                         />
                     </article>
                 </section>
@@ -78,7 +86,7 @@ const Post =
             <section className="row p-2">
                 <section className="col-auto ms-auto">
                     <Button variant='outlined' size='small' className='me-1' onClick={handleLike}><ThumbUpIcon /> <Typography variant='subtitle1' className='ms-1'>{likes}</Typography></Button>
-                    <Button variant='outlined' size='small' className='ms-1'><ModeCommentIcon /> <Typography variant='subtitle1' className='ms-1'>{countReplies}</Typography></Button>
+                    <Button variant='outlined' size='small' className='ms-1' onClick={() => window.location.href = "/post/" + unique}><ModeCommentIcon /> <Typography variant='subtitle1' className='ms-1'>{countReplies}</Typography></Button>
                 </section>
             </section>
 

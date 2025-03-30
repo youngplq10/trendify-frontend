@@ -11,7 +11,7 @@ const PostsListing = () => {
     const [posts, setPosts] = useState<post[]>([]);
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState<user>();
-    const [isLogged, setIsLogged] = useState<boolean>();
+    const [isLogged, setIsLogged] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchIsAuth = async () => {
@@ -53,6 +53,7 @@ const PostsListing = () => {
                                         ) : false
                                     ) : false
                                 }
+                                isUserLogged={isLogged}
                                 username={post.user.username} 
                                 unique={post.unique}
                                 profilePicture={post.user.profilePicture} 
