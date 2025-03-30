@@ -101,91 +101,75 @@ export const loginUser = async (formData: FormData) : Promise<string | void> => 
     }
 }
 
-export const newPost = async (formData: FormData) : Promise<string | void> => {
+export const newPost = async (formData: FormData): Promise<string | void | { unique: string }> => {
     try {
         const { jwt } = await getAllCookies();
 
         if (formData.get("postPicture") !== null) {
             const postPicture = formData.get("postPicture") as File;
-
             const buffer = Buffer.from(await postPicture.arrayBuffer());
-
             const file = bucket.file(`${Date.now()}-${postPicture.name}`);
-            const fileStream = file.createWriteStream({
-                resumable: false,
-                metadata: { contentType: postPicture.type }
-            });
 
-            fileStream.on("finish", async () => {
-                const [url] = await file.getSignedUrl({
-                    action: "read",
-                    expires: Date.now() + 60 * 60 * 24 * 365 * 100,
+            return new Promise((resolve, reject) => {
+                const fileStream = file.createWriteStream({
+                    resumable: false,
+                    metadata: { contentType: postPicture.type }
                 });
-                formData.delete("postPicture")
-                formData.append("image", url);
 
-                try {
-                    const res = await axios.post(API + "/auth/post/create", formData, {
-                        headers: {
-                            "Authorization" : "Bearer " + jwt?.value
-                        }
-                    });
+                fileStream.on("finish", async () => {
+                    try {
+                        const [url] = await file.getSignedUrl({
+                            action: "read",
+                            expires: Date.now() + 60 * 60 * 24 * 365 * 100,
+                        });
 
-                    if (res.status === 409) {
-                        return res.data.error
-                    }
+                        formData.delete("postPicture");
+                        formData.append("image", url);
 
-                } catch (error) {
-                    if (axios.isAxiosError(error)) {
-                        if (error.response?.status === 409) {
-                            return error.response.data.error
+                        const res = await axios.post(API + "/auth/post/create", formData, {
+                            headers: { "Authorization": "Bearer " + jwt?.value }
+                        });
+
+                        if (res.status === 201) {
+                            resolve({ unique: res.data.unique });
+                        } else if (res.status === 409) {
+                            reject(res.data.error);
                         } else {
-                            return "Server error. Please try again."
+                            reject("Unexpected server response.");
                         }
-                    } else {
-                        return "Server error. Please try again."
-                    }
-                }
-            });
-
-            fileStream.end(buffer);
-        } else {
-            try {
-                const res = await axios.post(API + "/auth/post/create", formData, {
-                    headers: {
-                        "Authorization" : "Bearer " + jwt?.value
+                    } catch (error) {
+                        reject(axios.isAxiosError(error) && error.response?.status === 409
+                            ? error.response.data.error
+                            : "Server error. Please try again."
+                        );
                     }
                 });
 
-                if (res.status === 409) {
-                    return res.data.error
-                }
+                fileStream.on("error", (err) => reject(err));
+                fileStream.end(buffer);
+            });
+        } else {
+            const res = await axios.post(API + "/auth/post/create", formData, {
+                headers: { "Authorization": "Bearer " + jwt?.value }
+            });
 
-            } catch (error) {
-                console.log(error)
-                if (axios.isAxiosError(error)) {
-                    if (error.response?.status === 409) {
-                        return error.response.data.error
-                    } else {
-                        return "Server error. Please try again."
-                    }
-                } else {
-                    return "Server error. Please try again."
-                }
+            if (res.status === 201) {
+                return { unique: res.data.unique };
+            }
+
+            if (res.status === 409) {
+                return res.data.error;
             }
         }
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            if (error.response?.status === 409) {
-                return error.response.data.error
-            } else {
-                return "Server error. Please try again."
-            }
+            return error.response?.status === 409 ? error.response.data.error : "Server error. Please try again.";
         } else {
-            return "Server error. Please try again."
+            return "Server error. Please try again.";
         }
     }
-}
+};
+
 
 export const getAllPosts = async () : Promise<post[] | string> => {
     try {

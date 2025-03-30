@@ -6,6 +6,8 @@ import Post from '../components/Post'
 import { post, user } from '../scripts/interfaces'
 import { getAllPosts, getUserData } from '../scripts/apicalls'
 import { getIsAuthenticated } from '../scripts/server'
+import { Alert, Snackbar } from '@mui/material'
+import { useSearchParams } from 'next/navigation'
 
 const PostsListing = () => {
     const [posts, setPosts] = useState<post[]>([]);
@@ -13,8 +15,17 @@ const PostsListing = () => {
     const [userData, setUserData] = useState<user>();
     const [isLogged, setIsLogged] = useState<boolean>(false);
 
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertState, setAlertState] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
+
+    const searchParams = useSearchParams();
+    const topPost = searchParams.get("topPost");
+
+    const [newestPost, setNewestPost] = useState<post>();
+
     useEffect(() => {
-        const fetchIsAuth = async () => {
+        const fetchData = async () => {
             const isAuth = await getIsAuthenticated();
             setIsLogged(isAuth);
 
@@ -22,7 +33,9 @@ const PostsListing = () => {
                 const resUserData = await getUserData();
 
                 if (typeof resUserData === "string") {
-                    //error handler
+                    setAlertSeverity("error");
+                    setAlertMessage(resUserData);
+                    setAlertState(true);
                 } else {
                     setUserData(resUserData);
                 }
@@ -30,10 +43,16 @@ const PostsListing = () => {
 
             const res = await getAllPosts();
             if (typeof res !== "string") {
-                setPosts(res);
+                if (topPost) {
+                    const filteredPosts = res.filter(post => post.unique !== topPost);
+                    setNewestPost(res.find(post => post.unique === topPost));
+                    setPosts(filteredPosts);
+                } else {
+                    setPosts(res);
+                }
             }
         }
-        fetchIsAuth();
+        fetchData();
     }, []);
 
     return (
@@ -41,6 +60,33 @@ const PostsListing = () => {
             <section className="row justify-content-center my-3">
                 <NewPostForm />
             </section>
+            {
+                newestPost ? (
+                    <section className="row justify-content-center my-2">
+                        <Post 
+                            isAlreadyLiked={
+                                userData ? (
+                                    userData.likedPosts ? (
+                                        userData.likedPosts.some(userLikedPosts => userLikedPosts.unique === topPost)
+                                    ) : false
+                                ) : false
+                            }
+                            isUserLogged={isLogged}
+                            username={newestPost?.user.username}
+                            unique={newestPost?.unique}
+                            profilePicture={newestPost?.user.profilePicture}
+                            createdAtDate={newestPost?.createdAtDate}
+                            imageLink={newestPost?.imageLink}
+                            content={newestPost?.content}
+                            countLikes={newestPost?.likeCount}
+                            countReplies={newestPost?.replyCount}
+                        />
+                    </section>
+                ) : (
+                    <></>
+                )
+                
+            }
             {
                 posts.map((post, index) => {
                     return (
@@ -67,6 +113,17 @@ const PostsListing = () => {
                     )
                 })
             }
+
+            <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
+                <Alert
+                    onClose={() => setAlertState(false)}
+                    severity={alertSeverity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </>
     )
 }

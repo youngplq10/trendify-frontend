@@ -11,7 +11,7 @@ const NewPostForm = () => {
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
-    const [alertSeverity, setAlertSeverity] = useState<"error" | "success">();
+    const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
 
     const handleSubmit = async () => {
         const validation = validateNewPost(content);
@@ -20,6 +20,7 @@ const NewPostForm = () => {
             setAlertMessage(validation);
             setAlertSeverity("error");
             setAlertState(true);
+            return;
         } else {
             const formData = new FormData();
             formData.append("content", content);
@@ -27,12 +28,21 @@ const NewPostForm = () => {
             if (postPicture !== null) {
                 formData.append("postPicture", postPicture, postPicture?.name);
             }
+            setAlertMessage("Sharing...");
+            setAlertSeverity("info");
+            setAlertState(true);
+
             const res = await newPost(formData);
 
-            if (res) {
+            setAlertState(false);
+
+            if (typeof res === "string") {
                 setAlertMessage(res);
                 setAlertSeverity("error");
                 setAlertState(true);
+            }
+            if (typeof res === "object") {
+                window.location.href = "/?topPost=" + res.unique
             }
         }
     }
