@@ -278,3 +278,27 @@ export const unlikePost = async (unique: string) : Promise<string> => {
         }
     }
 }
+
+export const getPost = async (unique: string) : Promise<post | string> => {
+    try {
+        const res = await axios.get(API + "/public/post/" + unique, {});
+
+        console.log(res.data.data);
+
+        if (res.status === 200) {
+            return res.data.data as post;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

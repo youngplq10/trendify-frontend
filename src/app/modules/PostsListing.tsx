@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import NewPostForm from '../components/NewPostForm'
-import Post from '../components/Post'
+import PostCard from '../components/PostCard'
 import { post, user } from '../scripts/interfaces'
 import { getAllPosts, getUserData } from '../scripts/apicalls'
 import { getIsAuthenticated } from '../scripts/server'
@@ -63,7 +63,7 @@ const PostsListing = () => {
             {
                 newestPost ? (
                     <section className="row justify-content-center my-2">
-                        <Post 
+                        <PostCard 
                             isAlreadyLiked={
                                 userData ? (
                                     userData.likedPosts ? (
@@ -91,7 +91,7 @@ const PostsListing = () => {
                 posts.map((post, index) => {
                     return (
                         <section className="row justify-content-center my-2" key={index}>
-                            <Post 
+                            <PostCard 
                                 isAlreadyLiked={
                                     userData ? (
                                         userData.likedPosts ? (
