@@ -8,6 +8,7 @@ import { beautifyTime } from '../scripts/scripts'
 import { likePost, unlikePost } from '../scripts/apicalls'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import ReplyForm from './ReplyForm'
 
 const Post = (
     { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged } 
@@ -16,7 +17,6 @@ const Post = (
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
-    const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
 
     const [liked, setLiked] = useState(isAlreadyLiked);
     const [likes, setLikes] = useState(countLikes);
@@ -76,7 +76,7 @@ const Post = (
                             height={0}
                             sizes="100vw"
                             className='img-custom'
-                            style={{ width: "100%", height: "auto", cursor: 'pointer', maxHeight: "300px" }}
+                            style={{ width: "100%", height: "auto", cursor: 'pointer', maxHeight: "600px" }}
                             onClick={() => window.location.href = "/post/" + unique}
                         />
                     </article>
@@ -90,6 +90,12 @@ const Post = (
                     <Button variant='outlined' size='small' className='me-1' onClick={handleLike}><ThumbUpIcon /> <Typography variant='subtitle1' className='ms-1'>{likes}</Typography></Button>
                     <Button variant='outlined' size='small' className='ms-1' onClick={() => window.location.href = "/post/" + unique}><ModeCommentIcon /> <Typography variant='subtitle1' className='ms-1'>{countReplies}</Typography></Button>
                 </section>
+            </section>
+
+            <section className='row p-2'>
+                    <section className='col-12'>
+                        <ReplyForm postUnique={unique} />
+                    </section>
             </section>
 
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
