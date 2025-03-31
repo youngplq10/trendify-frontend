@@ -54,7 +54,7 @@ const PostDetails = () => {
     }, []);
 
     return (
-        <section className='col-8'>
+        <section className='col-12 col-sm-10 col-md-8 col-xl-6'>
             {
                 post ? (
                     <Post

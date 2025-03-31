@@ -71,10 +71,11 @@ const PostCard =
                         <Image
                             src={imageLink}
                             alt='Image of post'
-                            width={100}
-                            height={100}
-                            className='img-fluid rounded'
-                            style={{ cursor: 'pointer', maxHeight: "300px" }}
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            className='img-custom'
+                            style={{ width: "100%", height: "auto", cursor: 'pointer', maxHeight: "300px" }}
                             onClick={() => window.location.href = "/post/" + unique}
                         />
                     </article>
