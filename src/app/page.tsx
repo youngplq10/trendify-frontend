@@ -1,5 +1,3 @@
-import { Typography } from "@mui/material";
-import Post from "./components/PostCard";
 import PostsListing from "./modules/PostsListing";
 import Navbar from "./modules/Navbar";
 

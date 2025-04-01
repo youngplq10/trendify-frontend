@@ -72,8 +72,16 @@ export const createUser = async (formData: FormData): Promise<string | void> => 
                 setAuthToken(res.data.jwt);
             }
         }
-    } catch {
-        "Server error. Please try again.";
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
     }
 };
 

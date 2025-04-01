@@ -11,6 +11,7 @@ import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ReplyForm from './ReplyForm'
 import { reply, user } from '../scripts/interfaces'
 import ReplyCard from './ReplyCard'
+import Loading from './Loading'
 
 const Post = (
     { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged, topReply, replies } 
@@ -32,6 +33,7 @@ const Post = (
 
             if (typeof resUserData === "string") {
                 //err
+                setLoading(false);
             } else {
                 setUser(resUserData);
                 setLoading(false);
@@ -61,7 +63,7 @@ const Post = (
         }
     }
 
-    if (loading) return <p>laoding</p>
+    if (loading) return <Loading />
     
     return (
         <section>
@@ -113,11 +115,17 @@ const Post = (
                 </section>
             </section>
 
-            <section className='row p-2'>
-                    <section className='col-12'>
-                        <ReplyForm postUnique={unique} />
+            {
+                isUserLogged ? (
+                    <section className='row p-2'>
+                        <section className='col-12'>
+                            <ReplyForm postUnique={unique} />
+                        </section>
                     </section>
-            </section>
+                ) : (
+                    <></>
+                )
+            }
 
             {
                 topReply ? (
@@ -128,7 +136,6 @@ const Post = (
                             content={topReply.content}
                             unique={topReply.unique}
                             createdAtDate={topReply.createdAtDate}
-                            post={topReply.post}
                             countLikes={topReply.countLikes}
                             isUserLogged={isUserLogged}
                             isAlreadyLiked={user ? (
@@ -154,7 +161,6 @@ const Post = (
                             content={reply.content}
                             unique={reply.unique}
                             createdAtDate={reply.createdAtDate}
-                            post={reply.post}
                             countLikes={reply.countLikes}
                             isUserLogged={isUserLogged}
                             isAlreadyLiked={user ? (

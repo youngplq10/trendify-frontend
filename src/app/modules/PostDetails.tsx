@@ -1,19 +1,17 @@
 "use client"
 
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { post, reply, user } from '../scripts/interfaces';
 import { getPost, getUserData } from '../scripts/apicalls';
 import Post from '../components/Post';
 import { getIsAuthenticated } from '../scripts/server';
 import { Alert, Snackbar } from '@mui/material';
+import Loading from '../components/Loading';
 
-const PostDetails = () => {
+const PostDetails = ({ topReply } : { topReply: string | null }) => {
     const params = useParams();
     const uniqueValue = params.postUnique;
-
-    const searchParams = useSearchParams();
-    const topReply = searchParams.get("topReply");
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
@@ -21,6 +19,8 @@ const PostDetails = () => {
 
     const [userData, setUserData] = useState<user>();
     const [isLogged, setIsLogged] = useState<boolean>(false);
+
+    const [loading, setLoading] = useState(true);
 
     const [replies, setReplies] = useState<reply[]>([]);
 
@@ -51,8 +51,10 @@ const PostDetails = () => {
                     setAlertSeverity("error");
                     setAlertMessage(postData);
                     setAlertState(true);
+                    setLoading(false);
                 } else {
                     setPost(postData);
+                    setLoading(false);
                 }
 
                 if (typeof topReply === "string" && typeof postData !== "string") {
@@ -65,7 +67,9 @@ const PostDetails = () => {
             }
         }
         fetchPost();
-    }, []);
+    }, [topReply, uniqueValue]);
+
+    if (loading) return <Loading />
 
     return (
         <section className='col-12 col-sm-10 col-md-8 col-xl-6'>

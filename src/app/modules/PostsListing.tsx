@@ -8,16 +8,18 @@ import { getAllPosts, getUserData } from '../scripts/apicalls'
 import { getIsAuthenticated } from '../scripts/server'
 import { Alert, Snackbar } from '@mui/material'
 import { useSearchParams } from 'next/navigation'
+import Loading from '../components/Loading'
 
 const PostsListing = () => {
     const [posts, setPosts] = useState<post[]>([]);
-    const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState<user>();
     const [isLogged, setIsLogged] = useState<boolean>(false);
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
     const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
+
+    const [loading, setLoading] = useState(true);
 
     const searchParams = useSearchParams();
     const topPost = searchParams.get("topPost");
@@ -47,13 +49,22 @@ const PostsListing = () => {
                     const filteredPosts = res.filter(post => post.unique !== topPost);
                     setNewestPost(res.find(post => post.unique === topPost));
                     setPosts(filteredPosts);
+                    setLoading(false);
                 } else {
                     setPosts(res);
+                    setLoading(false);
                 }
+            } else {
+                setAlertMessage(res);
+                setAlertSeverity("error");
+                setAlertState(true);
+                setLoading(false);
             }
         }
         fetchData();
-    }, []);
+    }, [topPost]);
+
+    if (loading) return <Loading />
 
     return (
         <>    

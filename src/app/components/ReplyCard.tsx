@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState } from 'react'
-import { post, user } from '../scripts/interfaces'
-import { likePost, likeReply, unlikePost, unlikeReply } from '../scripts/apicalls'
+import { user } from '../scripts/interfaces'
+import { likeReply, unlikeReply } from '../scripts/apicalls'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Alert, Button, Snackbar, Typography } from '@mui/material'
@@ -10,9 +10,9 @@ import { beautifyTime } from '../scripts/scripts'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 const ReplyCard = (
-    { imageLink, content, unique, createdAtDate, user, post, countLikes, isUserLogged, isAlreadyLiked }
+    { imageLink, content, unique, createdAtDate, user, countLikes, isUserLogged, isAlreadyLiked }
     :
-    { imageLink: string, content: string, unique: string, createdAtDate: string, user: user, post: post, countLikes: number, isUserLogged: boolean, isAlreadyLiked: boolean }
+    { imageLink: string, content: string, unique: string, createdAtDate: string, user: user, countLikes: number, isUserLogged: boolean, isAlreadyLiked: boolean }
 ) => {
 
     const [liked, setLiked] = useState(isAlreadyLiked);
@@ -20,8 +20,6 @@ const ReplyCard = (
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
-
-    console.log(unique, liked)
 
     const handleLike = async () => {
         if (isUserLogged) {

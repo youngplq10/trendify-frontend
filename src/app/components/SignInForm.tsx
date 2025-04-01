@@ -53,7 +53,7 @@ const SignInForm = () => {
             }} />
 
             <Button variant='contained' className='px-4 mb-2' onClick={handleSubmit}>Log in</Button>
-            <Typography variant='body1' color='text.primary'>You don't have an account? <Link href="/sign-up">Create one now!</Link></Typography>
+            <Typography variant='body1' color='text.primary'>You dont have an account? <Link href="/sign-up">Create one now!</Link></Typography>
 
             <Snackbar open={errorState} autoHideDuration={6000} onClose={() => setErrorState(false)}>
                 <Alert
