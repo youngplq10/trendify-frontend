@@ -15,14 +15,22 @@ const ReplyForm = ({ postUnique } : { postUnique: string }) => {
     const handleSubmit = async () => {
         const formData = new FormData();
         formData.append("content", content);
-        
+
         if (replyPicture !== null) {
             formData.append("replyPicture", replyPicture, replyPicture?.name)
         }
 
         formData.append("postUnique", postUnique);
         const res = await newReply(formData);
-        console.log(res);
+        
+        if (typeof res === "string") {
+            setAlertMessage(res);
+            setAlertSeverity("error");
+            setAlertState(true);
+        }
+        if (typeof res === "object") {
+            window.location.href = "/post/" + postUnique +"?topReply=" + res.unique;
+        }
     }
 
     return (

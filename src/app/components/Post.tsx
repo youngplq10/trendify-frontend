@@ -9,11 +9,12 @@ import { likePost, unlikePost } from '../scripts/apicalls'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ReplyForm from './ReplyForm'
+import { reply } from '../scripts/interfaces'
 
 const Post = (
-    { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged } 
+    { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged, topReply, replies } 
     :
-    { username: string, profilePicture: string | null, imageLink: string | null, unique: string, isUserLogged: boolean, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean } ) => {
+    { username: string, replies: reply[], profilePicture: string | null, imageLink: string | null, topReply: reply | undefined, unique: string, isUserLogged: boolean, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean } ) => {
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
@@ -97,6 +98,26 @@ const Post = (
                         <ReplyForm postUnique={unique} />
                     </section>
             </section>
+
+            {
+                topReply ? (
+                    <section className='row p-2'>
+                        <section className='col-12'>
+                            {topReply.content}
+                        </section>
+                    </section>
+                ) : (
+                    <></>
+                )
+            }
+
+            {
+                replies.map((reply, index) => (
+                    <>
+                        {reply.createdAtDate}
+                    </>
+                ))
+            }
 
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert

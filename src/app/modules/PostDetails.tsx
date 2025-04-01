@@ -1,8 +1,8 @@
 "use client"
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { post, user } from '../scripts/interfaces';
+import { post, reply, user } from '../scripts/interfaces';
 import { getPost, getUserData } from '../scripts/apicalls';
 import Post from '../components/Post';
 import { getIsAuthenticated } from '../scripts/server';
@@ -12,6 +12,9 @@ const PostDetails = () => {
     const params = useParams();
     const uniqueValue = params.postUnique;
 
+    const searchParams = useSearchParams();
+    const topReply = searchParams.get("topReply");
+
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
     const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
@@ -19,7 +22,10 @@ const PostDetails = () => {
     const [userData, setUserData] = useState<user>();
     const [isLogged, setIsLogged] = useState<boolean>(false);
 
+    const [replies, setReplies] = useState<reply[]>([]);
+
     const [post, setPost] = useState<post>();
+    const [newestReply, setNewestReply] = useState<reply>();
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -48,6 +54,14 @@ const PostDetails = () => {
                 } else {
                     setPost(postData);
                 }
+
+                if (typeof topReply === "string" && typeof postData !== "string") {
+                    const filteredReplies = postData.replies.filter(reply => reply.unique !== topReply);
+                    setNewestReply(postData.replies.find(reply => reply.unique === topReply));
+                    setReplies(filteredReplies);
+                } else if (typeof topReply !== "string" && typeof postData !== "string") {
+                    setReplies(postData.replies)
+                }
             }
         }
         fetchPost();
@@ -65,6 +79,8 @@ const PostDetails = () => {
                                 ) : false
                             ) : false
                         }
+                        replies={replies}
+                        topReply={newestReply}
                         isUserLogged={isLogged}
                         username={post?.user.username}
                         unique={post?.unique}

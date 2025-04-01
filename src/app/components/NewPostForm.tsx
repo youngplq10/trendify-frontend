@@ -42,7 +42,7 @@ const NewPostForm = () => {
                 setAlertState(true);
             }
             if (typeof res === "object") {
-                window.location.href = "/?topPost=" + res.unique
+                window.location.href = "/?topPost=" + res.unique;
             }
         }
     }

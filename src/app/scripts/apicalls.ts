@@ -354,6 +354,8 @@ export const newReply = async (formData: FormData): Promise<string | void | { un
                 headers: { "Authorization": "Bearer " + jwt?.value }
             });
 
+            console.log("no img")
+
             if (res.status === 201) {
                 return { unique: res.data.unique };
             }
