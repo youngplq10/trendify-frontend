@@ -2,17 +2,18 @@
 
 import React, { useState } from 'react'
 import { user } from '../scripts/interfaces'
-import { likeReply, unlikeReply } from '../scripts/apicalls'
+import { deleteReply, likeReply, unlikeReply } from '../scripts/apicalls'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Alert, Button, Snackbar, Typography } from '@mui/material'
+import { Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar, Typography } from '@mui/material'
 import { beautifyTime } from '../scripts/scripts'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ReplyCard = (
-    { imageLink, content, unique, createdAtDate, user, countLikes, isUserLogged, isAlreadyLiked }
+    { imageLink, content, unique, createdAtDate, user, countLikes, isUserLogged, isAlreadyLiked, userData, postUnique }
     :
-    { imageLink: string, content: string, unique: string, createdAtDate: string, user: user, countLikes: number, isUserLogged: boolean, isAlreadyLiked: boolean }
+    { imageLink: string, content: string, unique: string, createdAtDate: string, postUnique: string, userData: user | undefined, user: user, countLikes: number, isUserLogged: boolean, isAlreadyLiked: boolean }
 ) => {
 
     const [liked, setLiked] = useState(isAlreadyLiked);
@@ -20,6 +21,8 @@ const ReplyCard = (
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const handleLike = async () => {
         if (isUserLogged) {
@@ -39,6 +42,17 @@ const ReplyCard = (
         } else {
             setAlertMessage("You need to log in.");
             setAlertState(true);
+        }
+    }
+
+    const handleDeleteReply = async () => {
+        const res = await deleteReply(unique);
+
+        if (typeof res === "string") {
+            setAlertMessage(res);
+            setAlertState(true);
+        } else {
+            window.location.href = "/post/" + postUnique;
         }
     }
         
@@ -88,6 +102,13 @@ const ReplyCard = (
             <section className="row p-2">
                 <section className="col-auto ms-auto">
                     <Button variant='outlined' size='small' className='me-1' onClick={handleLike}><ThumbUpIcon /> <Typography variant='subtitle1' className='ms-1'>{likes}</Typography></Button>
+                    {
+                        userData?.username === user.username ? (
+                            <Button variant='outlined' size='small' className='ms-1' onClick={() => setDeleteDialogOpen(true)}><DeleteIcon /> <Typography variant='subtitle1' className='ms-1'>Delete</Typography></Button>
+                        ) : (
+                            <></>
+                        )
+                    }
                 </section>
             </section>
 
@@ -101,6 +122,16 @@ const ReplyCard = (
                     {alertMessage}
                 </Alert>
             </Snackbar>
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+            >
+                <DialogTitle><Typography variant='h5'>Are you sure you want delete it?</Typography></DialogTitle>
+                <DialogActions>
+                <Button onClick={() => setDeleteDialogOpen(false)}>Disagree</Button>
+                <Button onClick={handleDeleteReply}>Agree</Button>
+                </DialogActions>
+            </Dialog>
         </section>
     )
 }

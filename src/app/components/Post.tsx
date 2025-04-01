@@ -152,6 +152,8 @@ const Post = (
                 topReply ? (
                     <section className='row p-2'>
                         <ReplyCard
+                            userData={user}
+                            postUnique={unique}
                             user={topReply.user}
                             imageLink={topReply.imageLink}
                             content={topReply.content}
@@ -178,6 +180,8 @@ const Post = (
                     <section className='row p-2' key={index}>
                         <ReplyCard
                             user={reply.user}
+                            userData={user}
+                            postUnique={unique}
                             imageLink={reply.imageLink}
                             content={reply.content}
                             unique={reply.unique}
