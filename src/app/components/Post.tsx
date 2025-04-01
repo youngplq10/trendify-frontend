@@ -1,15 +1,16 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Alert, Button, Snackbar, Typography } from '@mui/material'
 import { beautifyTime } from '../scripts/scripts'
-import { likePost, unlikePost } from '../scripts/apicalls'
+import { getUserData, likePost, unlikePost } from '../scripts/apicalls'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ReplyForm from './ReplyForm'
-import { reply } from '../scripts/interfaces'
+import { reply, user } from '../scripts/interfaces'
+import ReplyCard from './ReplyCard'
 
 const Post = (
     { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged, topReply, replies } 
@@ -18,9 +19,26 @@ const Post = (
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [liked, setLiked] = useState(isAlreadyLiked);
     const [likes, setLikes] = useState(countLikes);
+
+    const [user, setUser] = useState<user>();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const resUserData = await getUserData();
+
+            if (typeof resUserData === "string") {
+                //err
+            } else {
+                setUser(resUserData);
+                setLoading(false);
+            }
+        }
+        fetchData();
+    }, []);
 
     const handleLike = async () => {
         if (isUserLogged) {
@@ -42,6 +60,8 @@ const Post = (
             setAlertState(true);
         }
     }
+
+    if (loading) return <p>laoding</p>
     
     return (
         <section>
@@ -102,9 +122,22 @@ const Post = (
             {
                 topReply ? (
                     <section className='row p-2'>
-                        <section className='col-12'>
-                            {topReply.content}
-                        </section>
+                        <ReplyCard
+                            user={topReply.user}
+                            imageLink={topReply.imageLink}
+                            content={topReply.content}
+                            unique={topReply.unique}
+                            createdAtDate={topReply.createdAtDate}
+                            post={topReply.post}
+                            countLikes={topReply.countLikes}
+                            isUserLogged={isUserLogged}
+                            isAlreadyLiked={user ? (
+                                user.likedReplies ? (
+                                    user.likedReplies.some(userLikedReplies => userLikedReplies.unique === topReply.unique)
+                                ) : false
+                            ) : false
+                            }
+                        />
                     </section>
                 ) : (
                     <></>
@@ -113,9 +146,25 @@ const Post = (
 
             {
                 replies.map((reply, index) => (
-                    <>
-                        {reply.createdAtDate}
-                    </>
+                    
+                    <section className='row p-2' key={index}>
+                        <ReplyCard
+                            user={reply.user}
+                            imageLink={reply.imageLink}
+                            content={reply.content}
+                            unique={reply.unique}
+                            createdAtDate={reply.createdAtDate}
+                            post={reply.post}
+                            countLikes={reply.countLikes}
+                            isUserLogged={isUserLogged}
+                            isAlreadyLiked={user ? (
+                                user.likedReplies ? (
+                                    user.likedReplies.some(userLikedReplies => userLikedReplies.unique === reply.unique)
+                                ) : false
+                            ) : false
+                        }
+                        />
+                    </section>
                 ))
             }
 

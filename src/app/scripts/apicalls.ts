@@ -372,3 +372,60 @@ export const newReply = async (formData: FormData): Promise<string | void | { un
         }
     }
 };
+
+export const likeReply = async (unique: string) : Promise<string> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.post(API + "/auth/reply/like/" + unique, {}, {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status === 200) {
+            return res.data.message;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again3."
+        }
+    }
+}
+
+export const unlikeReply = async (unique: string) : Promise<string> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.post(API + "/auth/reply/unlike/" + unique, {}, {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status === 200) {
+            return res.data.message;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

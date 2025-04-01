@@ -32,4 +32,5 @@ export interface reply {
     user: user,
     post: post,
     likes: user[],
+    countLikes: number,
 }
