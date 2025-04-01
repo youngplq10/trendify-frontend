@@ -437,3 +437,29 @@ export const unlikeReply = async (unique: string) : Promise<string> => {
         }
     }
 }
+
+export const deletePost = async (unique: string) : Promise<string | void> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.delete(API + "/auth/post/" + unique, {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status !== 200) {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

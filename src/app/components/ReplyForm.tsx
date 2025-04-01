@@ -21,6 +21,11 @@ const ReplyForm = ({ postUnique } : { postUnique: string }) => {
         }
 
         formData.append("postUnique", postUnique);
+
+        setAlertMessage("Sharing...");
+        setAlertSeverity("info");
+        setAlertState(true);
+        
         const res = await newReply(formData);
         
         if (typeof res === "string") {

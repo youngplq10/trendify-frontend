@@ -3,15 +3,16 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Alert, Button, Snackbar, Typography } from '@mui/material'
+import { Alert, Button, Dialog, DialogActions, DialogTitle, Snackbar, Typography } from '@mui/material'
 import { beautifyTime } from '../scripts/scripts'
-import { getUserData, likePost, unlikePost } from '../scripts/apicalls'
+import { deletePost, getUserData, likePost, unlikePost } from '../scripts/apicalls'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ReplyForm from './ReplyForm'
 import { reply, user } from '../scripts/interfaces'
 import ReplyCard from './ReplyCard'
 import Loading from './Loading'
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Post = (
     { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged, topReply, replies } 
@@ -21,6 +22,8 @@ const Post = (
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const [liked, setLiked] = useState(isAlreadyLiked);
     const [likes, setLikes] = useState(countLikes);
@@ -60,6 +63,17 @@ const Post = (
         } else {
             setAlertMessage("You need to log in.");
             setAlertState(true);
+        }
+    }
+
+    const handleDeletePost = async () => {
+        const res = await deletePost(unique);
+
+        if (typeof res === "string") {
+            setAlertMessage(res);
+            setAlertState(true);
+        } else {
+            window.location.href = "/";
         }
     }
 
@@ -112,6 +126,13 @@ const Post = (
                 <section className="col-auto ms-auto">
                     <Button variant='outlined' size='small' className='me-1' onClick={handleLike}><ThumbUpIcon /> <Typography variant='subtitle1' className='ms-1'>{likes}</Typography></Button>
                     <Button variant='outlined' size='small' className='ms-1' onClick={() => window.location.href = "/post/" + unique}><ModeCommentIcon /> <Typography variant='subtitle1' className='ms-1'>{countReplies}</Typography></Button>
+                    {
+                        user?.username === username ? (
+                            <Button variant='outlined' size='small' className='ms-1' onClick={() => setDeleteDialogOpen(true)}><DeleteIcon /> <Typography variant='subtitle1' className='ms-1'>Delete</Typography></Button>
+                        ) : (
+                            <></>
+                        )
+                    }
                 </section>
             </section>
 
@@ -184,6 +205,17 @@ const Post = (
                     {alertMessage}
                 </Alert>
             </Snackbar>
+
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => setDeleteDialogOpen(false)}
+            >
+                <DialogTitle><Typography variant='h5'>Are you sure you want delete it?</Typography></DialogTitle>
+                <DialogActions>
+                <Button onClick={() => setDeleteDialogOpen(false)}>Disagree</Button>
+                <Button onClick={handleDeletePost}>Agree</Button>
+                </DialogActions>
+            </Dialog>
         </section>
     )
 }
