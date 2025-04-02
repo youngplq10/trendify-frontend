@@ -3,6 +3,7 @@
 import { Alert, Button, Snackbar } from '@mui/material';
 import React, { useState } from 'react'
 import { newReply } from '../scripts/apicalls';
+import { validateNewReply } from '../scripts/validation';
 
 const ReplyForm = ({ postUnique } : { postUnique: string }) => {
     const [content, setContent] = useState("");
@@ -13,28 +14,37 @@ const ReplyForm = ({ postUnique } : { postUnique: string }) => {
     const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
 
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append("content", content);
+        const validation = validateNewReply(content);
 
-        if (replyPicture !== null) {
-            formData.append("replyPicture", replyPicture, replyPicture?.name)
-        }
-
-        formData.append("postUnique", postUnique);
-
-        setAlertMessage("Sharing...");
-        setAlertSeverity("info");
-        setAlertState(true);
-        
-        const res = await newReply(formData);
-        
-        if (typeof res === "string") {
-            setAlertMessage(res);
+        if (validation !== "Success") {
+            setAlertMessage(validation);
             setAlertSeverity("error");
             setAlertState(true);
-        }
-        if (typeof res === "object") {
-            window.location.href = "/post/" + postUnique +"?topReply=" + res.unique;
+            return;
+        } else {
+            const formData = new FormData();
+            formData.append("content", content);
+    
+            if (replyPicture !== null) {
+                formData.append("replyPicture", replyPicture, replyPicture?.name)
+            }
+    
+            formData.append("postUnique", postUnique);
+    
+            setAlertMessage("Sharing...");
+            setAlertSeverity("info");
+            setAlertState(true);
+            
+            const res = await newReply(formData);
+            
+            if (typeof res === "string") {
+                setAlertMessage(res);
+                setAlertSeverity("error");
+                setAlertState(true);
+            }
+            if (typeof res === "object") {
+                window.location.href = "/post/" + postUnique +"?topReply=" + res.unique;
+            }
         }
     }
 

@@ -44,7 +44,16 @@ const newPostSchema = Joi.object({
     content: Joi.string().min(3).max(400).required().messages({
         "string.empty": "Content can't be empty.",
         "string.min": "Content is too short. Minimum 3 characters.",
-        "string.max": "Content is too long. Maximum 20 characters.",
+        "string.max": "Content is too long. Maximum 400 characters.",
+        "any.required": "Content field is required to process.",
+    })
+})
+
+const newReplySchema = Joi.object({
+    content: Joi.string().min(3).max(400).required().messages({
+        "string.empty": "Content can't be empty.",
+        "string.min": "Content is too short. Minimum 3 characters.",
+        "string.max": "Content is too long. Maximum 400 characters.",
         "any.required": "Content field is required to process.",
     })
 })
@@ -71,6 +80,16 @@ export const validateExistingUser = (getUsername: string, getPassword: string) :
 
 export const validateNewPost = (getContent: string) : string => {
     const result = newPostSchema.validate({ content: getContent });
+
+    if (result.error != null) {
+        return result.error.message;
+    }
+    
+    return "Success";
+}
+
+export const validateNewReply = (getContent: string) : string => {
+    const result = newReplySchema.validate({ content: getContent });
 
     if (result.error != null) {
         return result.error.message;
