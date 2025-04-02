@@ -10,27 +10,34 @@ const SignInForm = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [errorState, setErrorState] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertState, setAlertState] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState<"error" | "info">("error");
 
     const handleSubmit = async () => {
         const validation = validateExistingUser(username, password);
 
         if (validation !== "Success") {
-            setErrorState(true);
-            setErrorMessage(validation);
+            setAlertState(true);
+            setAlertMessage(validation);
+            setAlertSeverity("error");
         } else {
             const formData = new FormData();
             formData.append("username", username);
             formData.append("password", password);
 
+            setAlertMessage("Logging in...");
+            setAlertSeverity("info");
+            setAlertState(true);
+
             const res = await loginUser(formData);
 
             if (res) {
-                setErrorMessage(res);
-                setErrorState(true);
+                setAlertMessage(res);
+                setAlertState(true);
+                setAlertSeverity("error");
             } else {
-                setErrorState(false);
+                setAlertState(false);
                 window.location.href = "/";
             }
         }
@@ -55,14 +62,14 @@ const SignInForm = () => {
             <Button variant='contained' className='px-4 mb-2' onClick={handleSubmit}>Log in</Button>
             <Typography variant='body1' color='text.primary'>You dont have an account? <Link href="/sign-up">Create one now!</Link></Typography>
 
-            <Snackbar open={errorState} autoHideDuration={6000} onClose={() => setErrorState(false)}>
+            <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
-                    onClose={() => setErrorState(false)}
-                    severity="error"
+                    onClose={() => setAlertState(false)}
+                    severity={alertSeverity}
                     variant="filled"
                     sx={{ width: '100%' }}
                 >
-                    {errorMessage}
+                    {alertMessage}
                 </Alert>
             </Snackbar>
         </form>

@@ -12,8 +12,9 @@ const SignUpForm = () => {
     const [repassword, setRepassword] = useState("");
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
 
-    const [errorMessage, setErrorMessage] = useState("");
-    const [errorState, setErrorState] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertState, setAlertState] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState<"error" | "info">("error");
 
     const handleSubmit = async () => {
         const validation = validateNewUser(username, email, password, repassword);
@@ -28,19 +29,25 @@ const SignUpForm = () => {
             if (profilePicture) {
                 formData.append("picture", profilePicture, profilePicture?.name);
             }
+
+            setAlertMessage("Creating account...");
+            setAlertState(true);
+            setAlertSeverity("info");
             
             const res = await createUser(formData);
 
             if (res) {
-                setErrorMessage(res);
-                setErrorState(true);
+                setAlertMessage(res);
+                setAlertState(true);
+                setAlertSeverity("error");
             } else {
-                setErrorState(false);
+                setAlertState(false);
                 window.location.href = "/";
             }
         } else {
-            setErrorMessage(validation);
-            setErrorState(true);
+            setAlertMessage(validation);
+            setAlertState(true);
+            setAlertSeverity("error");
         }
     }
 
@@ -102,14 +109,14 @@ const SignUpForm = () => {
                 You already have an account? <Link href="/sign-in">Sign in now!</Link>
             </Typography>
 
-            <Snackbar open={errorState} autoHideDuration={6000} onClose={() => setErrorState(false)}>
+            <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
-                    onClose={() => setErrorState(false)}
-                    severity="error"
+                    onClose={() => setAlertState(false)}
+                    severity={alertSeverity}
                     variant="filled"
                     sx={{ width: '100%' }}
                 >
-                    {errorMessage}
+                    {alertMessage}
                 </Alert>
             </Snackbar>
         </form>

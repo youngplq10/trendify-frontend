@@ -104,7 +104,7 @@ const PostDetails = ({ topReply } : { topReply: string | null }) => {
             {
                 post ? (
                     newestReply ? (
-                        <section className='row p-2'>
+                        <section className='row p-3'>
                             <ReplyCard
                                 userData={userData}
                                 postUnique={post.unique}
@@ -135,7 +135,7 @@ const PostDetails = ({ topReply } : { topReply: string | null }) => {
                 post ? (
                     replies.map((reply, index) => (
                         
-                        <section className='row p-2' key={index}>
+                        <section className='row p-3' key={index}>
                             <ReplyCard
                                 user={reply.user}
                                 userData={userData}
