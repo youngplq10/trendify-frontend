@@ -1,6 +1,6 @@
 "use client"
 
-import { Alert, Button, Snackbar } from '@mui/material';
+import { Alert, Button, Snackbar, Typography } from '@mui/material';
 import React, { useState } from 'react'
 import { validateNewPost } from '../scripts/validation';
 import { newPost } from '../scripts/apicalls';
@@ -13,6 +13,8 @@ const NewPostForm = () => {
     const [alertState, setAlertState] = useState(false);
     const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
 
+    const [contentLength, setContentLength] = useState(0);
+
     const handleSubmit = async () => {
         const validation = validateNewPost(content);
 
@@ -21,6 +23,7 @@ const NewPostForm = () => {
             setAlertSeverity("error");
             setAlertState(true);
             return;
+
         } else {
             const formData = new FormData();
             formData.append("content", content);
@@ -50,23 +53,40 @@ const NewPostForm = () => {
     return (
         <section className="col-12 col-sm-10 col-md-8 col-xl-6 p-0">
             <form>
-            <textarea
-                style={{
-                    width: "100%",
-                    minHeight: "3rem",
-                    backgroundColor: "#05040c",
-                    color: "#e8e6f5",
-                    border: "1px solid #e8e6f5",
-                    padding: "8px",
-                    resize: "none",
-                    overflow: "hidden",
-                }}
-                rows={3}
-                placeholder="Share yours thoughs..."
-                maxLength={400}
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-            />
+            <div style={{ position: "relative", width: "100%" }}>
+                <textarea
+                    style={{
+                        width: "100%",
+                        minHeight: "3rem",
+                        backgroundColor: "#05040c",
+                        color: "#e8e6f5",
+                        border: "1px solid #e8e6f5",
+                        padding: "8px",
+                        resize: "none",
+                        overflow: "hidden",
+                    }}
+                    rows={3}
+                    placeholder="Share your thoughts..."
+                    maxLength={400}
+                    value={content}
+                    onChange={(e) => {
+                        setContent(e.target.value);
+                        setContentLength(e.target.value.length);
+                    }}
+                />
+                <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    style={{
+                        position: "absolute",
+                        bottom: "4px",
+                        right: "8px",
+                        fontSize: "0.8rem",
+                    }}
+                >
+                    {contentLength}/400
+                </Typography>
+            </div>
 
             <input
                 type="file" 
