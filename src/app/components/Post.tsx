@@ -148,57 +148,6 @@ const Post = (
                 )
             }
 
-            {
-                topReply ? (
-                    <section className='row p-2'>
-                        <ReplyCard
-                            userData={user}
-                            postUnique={unique}
-                            user={topReply.user}
-                            imageLink={topReply.imageLink}
-                            content={topReply.content}
-                            unique={topReply.unique}
-                            createdAtDate={topReply.createdAtDate}
-                            countLikes={topReply.countLikes}
-                            isUserLogged={isUserLogged}
-                            isAlreadyLiked={user ? (
-                                user.likedReplies ? (
-                                    user.likedReplies.some(userLikedReplies => userLikedReplies.unique === topReply.unique)
-                                ) : false
-                            ) : false
-                            }
-                        />
-                    </section>
-                ) : (
-                    <></>
-                )
-            }
-
-            {
-                replies.map((reply, index) => (
-                    
-                    <section className='row p-2' key={index}>
-                        <ReplyCard
-                            user={reply.user}
-                            userData={user}
-                            postUnique={unique}
-                            imageLink={reply.imageLink}
-                            content={reply.content}
-                            unique={reply.unique}
-                            createdAtDate={reply.createdAtDate}
-                            countLikes={reply.countLikes}
-                            isUserLogged={isUserLogged}
-                            isAlreadyLiked={user ? (
-                                user.likedReplies ? (
-                                    user.likedReplies.some(userLikedReplies => userLikedReplies.unique === reply.unique)
-                                ) : false
-                            ) : false
-                        }
-                        />
-                    </section>
-                ))
-            }
-
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
                     onClose={() => setAlertState(false)}

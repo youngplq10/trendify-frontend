@@ -8,6 +8,7 @@ import Post from '../components/Post';
 import { getIsAuthenticated } from '../scripts/server';
 import { Alert, Snackbar } from '@mui/material';
 import Loading from '../components/Loading';
+import ReplyCard from '../components/ReplyCard';
 
 const PostDetails = ({ topReply } : { topReply: string | null }) => {
     const params = useParams();
@@ -99,6 +100,66 @@ const PostDetails = ({ topReply } : { topReply: string | null }) => {
                     <></>
                 )
             }
+
+            {
+                post ? (
+                    newestReply ? (
+                        <section className='row p-2'>
+                            <ReplyCard
+                                userData={userData}
+                                postUnique={post.unique}
+                                user={newestReply.user}
+                                imageLink={newestReply.imageLink}
+                                content={newestReply.content}
+                                unique={newestReply.unique}
+                                createdAtDate={newestReply.createdAtDate}
+                                countLikes={newestReply.countLikes}
+                                isUserLogged={isLogged}
+                                isAlreadyLiked={newestReply.user ? (
+                                    newestReply.user.likedReplies ? (
+                                        newestReply.user.likedReplies.some(userLikedReplies => userLikedReplies.unique === newestReply.unique)
+                                    ) : false
+                                ) : false
+                                }
+                            />
+                        </section>
+                    ) : (
+                        <></>
+                    )
+                ) : (
+                    <></>
+                )
+            }
+
+            {
+                post ? (
+                    replies.map((reply, index) => (
+                        
+                        <section className='row p-2' key={index}>
+                            <ReplyCard
+                                user={reply.user}
+                                userData={userData}
+                                postUnique={post.unique}
+                                imageLink={reply.imageLink}
+                                content={reply.content}
+                                unique={reply.unique}
+                                createdAtDate={reply.createdAtDate}
+                                countLikes={reply.countLikes}
+                                isUserLogged={isLogged}
+                                isAlreadyLiked={reply.user ? (
+                                    reply.user.likedReplies ? (
+                                        reply.user.likedReplies.some(userLikedReplies => userLikedReplies.unique === reply.unique)
+                                    ) : false
+                                ) : false
+                            }
+                            />
+                        </section>
+                    ))
+                ) : (
+                    <></>
+                )
+            }
+            
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
                     onClose={() => setAlertState(false)}
