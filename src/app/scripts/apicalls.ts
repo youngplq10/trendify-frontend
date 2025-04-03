@@ -489,3 +489,25 @@ export const deleteReply = async (unique: string) : Promise<string | void> => {
         }
     }
 }
+
+export const getUserByUsername = async (username: string) : Promise<string | user> => {
+    try {
+        const res = await axios.get(API + "/public/user/" + username, {});
+
+        if (res.status === 200) {
+            return res.data.data as user;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

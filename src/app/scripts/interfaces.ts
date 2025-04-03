@@ -10,6 +10,7 @@ export interface user {
     likedPosts: post[],
     likedReplies: reply[],
     replies: reply[],
+    bio: string,
 }
 
 export interface post {
