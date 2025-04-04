@@ -11,6 +11,8 @@ export interface user {
     likedReplies: reply[],
     replies: reply[],
     bio: string,
+    followersCount: number,
+    followingCount: number,
 }
 
 export interface post {

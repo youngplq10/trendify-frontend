@@ -511,3 +511,59 @@ export const getUserByUsername = async (username: string) : Promise<string | use
         }
     }
 }
+
+export const followUser = async (username: string) : Promise<string> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.post(API + "/auth/user/follow/" + username, {}, {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status === 200) {
+            return res.data.message;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}
+
+export const unfollowUser = async (username: string) : Promise<string> => {
+    try {
+        const { jwt } = await getAllCookies();
+
+        const res = await axios.post(API + "/auth/user/unfollow/" + username, {}, {
+            headers: {
+                "Authorization" : "Bearer " + jwt?.value
+            }
+        });
+
+        if (res.status === 200) {
+            return res.data.message;
+        } else {
+            return res.data.error;
+        }
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.status === 409) {
+                return error.response.data.error
+            } else {
+                return "Server error. Please try again."
+            }
+        } else {
+            return "Server error. Please try again."
+        }
+    }
+}

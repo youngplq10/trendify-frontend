@@ -6,7 +6,7 @@ export function middleware(req: NextRequest) {
     const isAuth = req.cookies.get("isAuthenticated")?.value;
     
     //Not authenticated users trying to access only-authed content
-    if (isAuth !== "true" && req.nextUrl.pathname.match("/profile")){
+    if (isAuth !== "true" && req.nextUrl.pathname === "/profile"){
         return NextResponse.redirect(new URL("/sign-in", req.url));
     } 
     if (isAuth !== "true" && req.nextUrl.pathname.match("/log-out")){
