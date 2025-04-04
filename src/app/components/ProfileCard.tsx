@@ -62,7 +62,7 @@ const ProfileCard = ({ targetUser, isAlreadyFollowing, isLogged } : { targetUser
             </section>
 
             <section className='row p-2'>
-                <section className='col-6'>
+                <section className='col-12'>
                     <Typography variant='body1' color='text.primary'>{targetUser.bio}</Typography>
                 </section>
             </section>

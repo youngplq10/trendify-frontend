@@ -7,6 +7,8 @@ import { getUserByUsername, getUserData } from '../scripts/apicalls';
 import ProfileCard from '../components/ProfileCard';
 import { Alert, Snackbar } from '@mui/material';
 import { getIsAuthenticated } from '../scripts/server';
+import PostCard from '../components/PostCard';
+import Loading from '../components/Loading';
 
 const Profile = () => {
     const params = useParams();
@@ -16,6 +18,9 @@ const Profile = () => {
 
     const [targetUser, setTargetUser] = useState<user>();
     const [userData, setUserData] = useState<user>();
+
+    const [loadingTargetUser, setLoadingTargetUser] = useState(true);
+    const [loadingUserData, setLoadingUserData] = useState(true);
 
     const [alertMessage, setAlertMessage] = useState("");
     const [alertState, setAlertState] = useState(false);
@@ -38,6 +43,8 @@ const Profile = () => {
                 setAlertState(true);
                 setAlertMessage("Failed to get user data. Please refresh page.");
             }
+
+            setLoadingTargetUser(false);
         }
 
         const fetchUserData = async () => {
@@ -55,15 +62,19 @@ const Profile = () => {
                     setUserData(resUserData);
                 }
             }
+
+            setLoadingUserData(false);
         }
 
         fetchUserData();
         fetchTargetData();
     }, []);
 
+    if (loadingTargetUser || loadingUserData) return <Loading />
+
     return (
         <>
-            <section className='row justify-content-center'>
+            <section className='row justify-content-center my-2'>
                 <section className='col-12 col-sm-10 col-md-8 col-xl-6 border'>
                     {
                         targetUser ? (
@@ -84,7 +95,38 @@ const Profile = () => {
                     }
                 </section>
             </section>
-            
+
+            {
+                targetUser ? (
+                    targetUser.posts.map((post, index) => {
+                        return (
+                            <section className="row justify-content-center my-2" key={index}>
+                                <PostCard 
+                                    isAlreadyLiked={
+                                        userData ? (
+                                            userData.likedPosts ? (
+                                                userData.likedPosts.some(userLikedPosts => userLikedPosts.unique === post.unique)
+                                            ) : false
+                                        ) : false
+                                    }
+                                    isUserLogged={isLogged}
+                                    username={targetUser.username} 
+                                    unique={post.unique}
+                                    profilePicture={targetUser.profilePicture} 
+                                    createdAtDate={post.createdAtDate} 
+                                    imageLink={post.imageLink} 
+                                    content={post.content} 
+                                    countLikes={post.likeCount}
+                                    countReplies={post.replyCount}
+                                />
+                            </section>    
+                        )
+                    })
+                ) : (
+                    <></>
+                )
+            }
+
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
                     onClose={() => setAlertState(false)}

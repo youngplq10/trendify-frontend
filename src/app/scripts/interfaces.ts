@@ -13,6 +13,7 @@ export interface user {
     bio: string,
     followersCount: number,
     followingCount: number,
+    posts: post[],
 }
 
 export interface post {
