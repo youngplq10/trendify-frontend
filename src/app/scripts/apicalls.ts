@@ -112,6 +112,10 @@ export const loginUser = async (formData: FormData) : Promise<string | void> => 
 export const newPost = async (formData: FormData): Promise<string | void | { unique: string }> => {
     try {
         const { jwt } = await getAllCookies();
+        
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         if (formData.get("postPicture") !== null) {
             const postPicture = formData.get("postPicture") as File;
@@ -205,6 +209,10 @@ export const getUserData = async () : Promise<user | string> => {
     try {
         const { jwt } = await getAllCookies();
 
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
+
         const res = await axios.get(API + "/auth/user", {
             headers: {
                 "Authorization" : "Bearer " + jwt?.value
@@ -232,6 +240,10 @@ export const getUserData = async () : Promise<user | string> => {
 export const likePost = async (unique: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
+
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         const res = await axios.post(API + "/auth/post/like/" + unique, {}, {
             headers: {
@@ -262,6 +274,10 @@ export const unlikePost = async (unique: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
 
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
+
         const res = await axios.post(API + "/auth/post/unlike/" + unique, {}, {
             headers: {
                 "Authorization" : "Bearer " + jwt?.value
@@ -290,8 +306,6 @@ export const getPost = async (unique: string) : Promise<post | string> => {
     try {
         const res = await axios.get(API + "/public/post/" + unique, {});
 
-        console.log(res.data.data);
-
         if (res.status === 200) {
             return res.data.data as post;
         } else {
@@ -313,6 +327,10 @@ export const getPost = async (unique: string) : Promise<post | string> => {
 export const newReply = async (formData: FormData): Promise<string | void | { unique: string }> => {
     try {
         const { jwt } = await getAllCookies();
+
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         if (formData.get("replyPicture") !== null) {
             const replyPicture = formData.get("replyPicture") as File;
@@ -362,8 +380,6 @@ export const newReply = async (formData: FormData): Promise<string | void | { un
                 headers: { "Authorization": "Bearer " + jwt?.value }
             });
 
-            console.log("no img")
-
             if (res.status === 201) {
                 return { unique: res.data.unique };
             }
@@ -384,6 +400,10 @@ export const newReply = async (formData: FormData): Promise<string | void | { un
 export const likeReply = async (unique: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
+
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         const res = await axios.post(API + "/auth/reply/like/" + unique, {}, {
             headers: {
@@ -414,6 +434,10 @@ export const unlikeReply = async (unique: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
 
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
+
         const res = await axios.post(API + "/auth/reply/unlike/" + unique, {}, {
             headers: {
                 "Authorization" : "Bearer " + jwt?.value
@@ -442,6 +466,10 @@ export const deletePost = async (unique: string) : Promise<string | void> => {
     try {
         const { jwt } = await getAllCookies();
 
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
+
         const res = await axios.delete(API + "/auth/post/" + unique, {
             headers: {
                 "Authorization" : "Bearer " + jwt?.value
@@ -467,6 +495,10 @@ export const deletePost = async (unique: string) : Promise<string | void> => {
 export const deleteReply = async (unique: string) : Promise<string | void> => {
     try {
         const { jwt } = await getAllCookies();
+
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         const res = await axios.delete(API + "/auth/reply/" + unique, {
             headers: {
@@ -516,6 +548,10 @@ export const followUser = async (username: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
 
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
+
         const res = await axios.post(API + "/auth/user/follow/" + username, {}, {
             headers: {
                 "Authorization" : "Bearer " + jwt?.value
@@ -543,6 +579,10 @@ export const followUser = async (username: string) : Promise<string> => {
 export const unfollowUser = async (username: string) : Promise<string> => {
     try {
         const { jwt } = await getAllCookies();
+
+        if (jwt === undefined) {
+            return "You need to log in."
+        }
 
         const res = await axios.post(API + "/auth/user/unfollow/" + username, {}, {
             headers: {

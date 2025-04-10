@@ -1,5 +1,5 @@
 export interface user {
-    username: string,
+    username: string, 
     email: string,
     profilePicture: string,
     unique: string,
