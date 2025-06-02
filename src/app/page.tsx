@@ -1,22 +1,18 @@
-"use client"
-
-import PostsListing from "./modules/PostsListing";
-import Navbar from "./modules/Navbar";
-import { useSearchParams } from "next/navigation";
+import React, { Suspense } from 'react';
+import Navbar from './modules/Navbar';
+import SearchWrapper from './components/SearchWrapper';
 
 export default function Home() {
-
-  const searchParams = useSearchParams();
-      const topPost = searchParams.get("topPost");
-      
-    return (
-      <section className="container-lg">
-        <nav className="row">
-          <Navbar />
-        </nav>
-        <section className="row justify-content-center">
-          <PostsListing topPost={topPost} />
-        </section>
+  return (
+    <section className="container-lg">
+      <nav className="row">
+        <Navbar />
+      </nav>
+      <section className="row justify-content-center">
+        <Suspense fallback={<div>Loading...</div>}>
+          <SearchWrapper />
+        </Suspense>
       </section>
-    )
+    </section>
+  );
 }
