@@ -8,9 +8,10 @@ import { post, user } from "./interfaces";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
+const GCSKEY = process.env.NEXT_PRIVATE_GCSKEY || "";
 
 const storage = new Storage({
-    keyFilename: path.join(process.cwd(), "gcs-key.json"),
+    keyFilename: path.join(process.cwd(), GCSKEY),
 });
 const bucket = storage.bucket(BUCKETNAME || "");
 
