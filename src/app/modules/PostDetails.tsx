@@ -1,6 +1,6 @@
 "use client"
 
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { post, reply, user } from '../scripts/interfaces';
 import { getPost, getUserData } from '../scripts/apicalls';
@@ -10,7 +10,7 @@ import { Alert, Snackbar } from '@mui/material';
 import Loading from '../components/Loading';
 import ReplyCard from '../components/ReplyCard';
 
-const PostDetails = ({ topReply } : { topReply: string | null }) => {
+const PostDetails = () => {
     const params = useParams();
     const uniqueValue = params.postUnique;
 
@@ -27,6 +27,9 @@ const PostDetails = ({ topReply } : { topReply: string | null }) => {
 
     const [post, setPost] = useState<post>();
     const [newestReply, setNewestReply] = useState<reply>();
+
+    const searchParams = useSearchParams();
+    const topReply = searchParams.get("topReply");
 
     useEffect(() => {
         const fetchPost = async () => {

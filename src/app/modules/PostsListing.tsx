@@ -7,10 +7,9 @@ import { post, user } from '../scripts/interfaces'
 import { getAllPosts, getUserData } from '../scripts/apicalls'
 import { getIsAuthenticated } from '../scripts/server'
 import { Alert, Snackbar } from '@mui/material'
-import { useSearchParams } from 'next/navigation'
 import Loading from '../components/Loading'
 
-const PostsListing = () => {
+const PostsListing = ({ topPost } : { topPost: string | null }) => {
     const [posts, setPosts] = useState<post[]>([]);
     const [userData, setUserData] = useState<user>();
     const [isLogged, setIsLogged] = useState<boolean>(false);
@@ -20,9 +19,6 @@ const PostsListing = () => {
     const [alertSeverity, setAlertSeverity] = useState<"error" | "success" | "info">();
 
     const [loading, setLoading] = useState(true);
-
-    const searchParams = useSearchParams();
-    const topPost = searchParams.get("topPost");
 
     const [newestPost, setNewestPost] = useState<post>();
 
