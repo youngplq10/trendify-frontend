@@ -10,12 +10,11 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ReplyForm from './ReplyForm'
 import { reply, user } from '../scripts/interfaces'
-import ReplyCard from './ReplyCard'
 import Loading from './Loading'
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const Post = (
-    { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged, topReply, replies } 
+    { username, profilePicture, imageLink, content, createdAtDate, countLikes, countReplies, isAlreadyLiked, unique, isUserLogged } 
     :
     { username: string, replies: reply[], profilePicture: string | null, imageLink: string | null, topReply: reply | undefined, unique: string, isUserLogged: boolean, content: string, createdAtDate: string, countLikes: number, countReplies: number, isAlreadyLiked: boolean } ) => {
 

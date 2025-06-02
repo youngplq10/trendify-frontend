@@ -68,7 +68,7 @@ const Profile = () => {
 
         fetchUserData();
         fetchTargetData();
-    }, []);
+    }, [username]);
 
     if (loadingTargetUser || loadingUserData) return <Loading />
 

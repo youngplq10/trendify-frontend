@@ -5,7 +5,7 @@ import PostDetails from '@/app/modules/PostDetails'
 import { useSearchParams } from 'next/navigation';
 import React from 'react'
 
-const page = () => {
+const Page = () => {
     const searchParams = useSearchParams();
     const topReply = searchParams.get("topReply");
 
@@ -21,4 +21,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page
