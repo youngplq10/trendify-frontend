@@ -62,6 +62,8 @@ const PostsListing = ({ topPost } : { topPost: string | null }) => {
 
     if (loading) return <Loading />
 
+    console.log(posts)
+
     return (
         <>    
             <section className="row justify-content-center my-3">

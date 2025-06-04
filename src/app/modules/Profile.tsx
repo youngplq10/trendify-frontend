@@ -86,6 +86,13 @@ const Profile = () => {
                                         ) : false
                                     ) : false
                                 }
+                                isItMyAccount={
+                                    userData ? (
+                                        userData.username === targetUser.username
+                                    ) : (
+                                        false
+                                    )
+                                }
                                 isLogged={isLogged}
                                 targetUser={targetUser} 
                             />

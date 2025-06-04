@@ -8,7 +8,7 @@ import { Alert, Button, Snackbar, Typography } from '@mui/material'
 import { beautifyTime } from '../scripts/scripts'
 import { followUser, unfollowUser } from '../scripts/apicalls'
 
-const ProfileCard = ({ targetUser, isAlreadyFollowing, isLogged } : { targetUser: user, isAlreadyFollowing: boolean, isLogged: boolean }) => {
+const ProfileCard = ({ targetUser, isAlreadyFollowing, isLogged, isItMyAccount } : { targetUser: user, isAlreadyFollowing: boolean, isLogged: boolean, isItMyAccount : boolean }) => {
     const [isFollowing, setIsFollowing] = useState(isAlreadyFollowing);
 
     const [followers, setFollowers] = useState(targetUser.followersCount);
@@ -83,10 +83,14 @@ const ProfileCard = ({ targetUser, isAlreadyFollowing, isLogged } : { targetUser
 
             <section className='row p-2'>
                 {
-                    isFollowing ? (
-                        <Button variant='outlined' onClick={handleFollow}>Unfollow</Button>
+                    isItMyAccount ? (
+                        <></>
                     ) : (
-                        <Button variant='contained' onClick={handleFollow}>Follow</Button>
+                        isFollowing ? (
+                            <Button variant='outlined' onClick={handleFollow}>Unfollow</Button>
+                        ) : (
+                            <Button variant='contained' onClick={handleFollow}>Follow</Button>
+                        )
                     )
                 }
             </section>

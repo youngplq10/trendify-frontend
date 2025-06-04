@@ -8,10 +8,9 @@ import { post, user } from "./interfaces";
 
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
-const GCSKEY = process.env.NEXT_PRIVATE_GCSKEY || "";
 
 const storage = new Storage({
-    keyFilename: path.join(process.cwd(), GCSKEY),
+    keyFilename: path.join(process.cwd(), "gcs-key.json"),
 });
 const bucket = storage.bucket(BUCKETNAME || "");
 
@@ -123,6 +122,8 @@ export const newPost = async (formData: FormData): Promise<string | void | { uni
             const buffer = Buffer.from(await postPicture.arrayBuffer());
             const file = bucket.file(`${Date.now()}-${postPicture.name}`);
 
+            console.log(file);
+
             return new Promise((resolve, reject) => {
                 const fileStream = file.createWriteStream({
                     resumable: false,
@@ -138,6 +139,8 @@ export const newPost = async (formData: FormData): Promise<string | void | { uni
 
                         formData.delete("postPicture");
                         formData.append("image", url);
+
+                        console.log(url)
 
                         const res = await axios.post(API + "/auth/post/create", formData, {
                             headers: { "Authorization": "Bearer " + jwt?.value }
@@ -188,6 +191,7 @@ export const getAllPosts = async () : Promise<post[] | string> => {
         const res = await axios.get(API + "/public/post/getall", {});
 
         if (res.status === 200) {
+            res.data.posts.map((post : post) => console.log(post))
             return res.data.posts as post[];
         } else {
             return res.data.error;
