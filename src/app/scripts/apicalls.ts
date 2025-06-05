@@ -1,7 +1,6 @@
 "use server"
 
 import { Storage } from "@google-cloud/storage";
-import path from "path";
 import axios from "axios"
 import { getAllCookies, setAuthToken } from "./server";
 import { post, user } from "./interfaces";
@@ -9,9 +8,12 @@ import { post, user } from "./interfaces";
 const BUCKETNAME = process.env.NEXT_PRIVATE_BUCKET_NAME;
 const API = process.env.NEXT_PRIVATE_API;
 
+const keyJson = Buffer.from(process.env.NEXT_PRIVATE_GCSKEY!, "base64").toString("utf8");
+
 const storage = new Storage({
-    keyFilename: path.join(process.cwd(), "gcs-key.json"),
+  credentials: JSON.parse(keyJson),
 });
+
 const bucket = storage.bucket(BUCKETNAME || "");
 
 export const createUser = async (formData: FormData): Promise<string | void> => {

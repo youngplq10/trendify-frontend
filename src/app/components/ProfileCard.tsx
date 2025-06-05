@@ -81,20 +81,6 @@ const ProfileCard = ({ targetUser, isAlreadyFollowing, isLogged, isItMyAccount }
                 </section>
             </section>
 
-            <section className='row p-2'>
-                {
-                    isItMyAccount ? (
-                        <></>
-                    ) : (
-                        isFollowing ? (
-                            <Button variant='outlined' onClick={handleFollow}>Unfollow</Button>
-                        ) : (
-                            <Button variant='contained' onClick={handleFollow}>Follow</Button>
-                        )
-                    )
-                }
-            </section>
-
             <Snackbar open={alertState} autoHideDuration={6000} onClose={() => setAlertState(false)}>
                 <Alert
                     onClose={() => setAlertState(false)}

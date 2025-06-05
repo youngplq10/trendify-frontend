@@ -74,35 +74,6 @@ const Profile = () => {
 
     return (
         <>
-            <section className='row justify-content-center my-2'>
-                <section className='col-12 col-sm-10 col-md-8 col-xl-6 border'>
-                    {
-                        targetUser ? (
-                            <ProfileCard 
-                                isAlreadyFollowing={
-                                    userData ? (
-                                        userData.following ? (
-                                            userData.following.some(userFollowingUsers => userFollowingUsers.username === targetUser.username)
-                                        ) : false
-                                    ) : false
-                                }
-                                isItMyAccount={
-                                    userData ? (
-                                        userData.username === targetUser.username
-                                    ) : (
-                                        false
-                                    )
-                                }
-                                isLogged={isLogged}
-                                targetUser={targetUser} 
-                            />
-                        ) : (
-                            <></>
-                        )
-                    }
-                </section>
-            </section>
-
             {
                 targetUser ? (
                     targetUser.posts.map((post, index) => {
